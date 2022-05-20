@@ -1,7 +1,7 @@
-// Buildscript is evaluated before everything else so we can't use getExtOrDefault
-def gradle_version = rootProject.ext.has('gradleVersion') ? rootProject.ext.get('gradleVersion') : project.properties['RNNaverLogin_gradleVersion']
-
 buildscript {
+    // Buildscript is evaluated before everything else so we can't use getExtOrDefault
+    def gradle_version = rootProject.ext.has('gradleVersion') ? rootProject.ext.get('gradleVersion') : project.properties['RNNaverLogin_gradleVersion']
+
     repositories {
         google()
         mavenCentral()
@@ -17,7 +17,7 @@ buildscript {
 apply plugin: 'com.android.library'
 
 def getExtOrDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['RNKakaoLogins_' + name]
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['RNNaverLogin_' + name]
 }
 
 android {
