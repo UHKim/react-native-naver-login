@@ -1,21 +1,35 @@
 package com.dooboolab.naverlogin
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.util.Log
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.*
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthErrorCode
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
 
-class RNNaverLoginModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(
+class RNNaverLoginModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(
     reactContext
 ) {
     override fun getName() = "RNNaverLogin"
+
+    fun initSDK(context: Context?, consumerKey: String?, consumerSecret: String?, appName: String?): Boolean {
+        val naverConsumerKey = reactContext.resources.getString(
+            reactContext.resources.getIdentifier("naver_client_id", "string", reactContext.packageName))
+        val naverConsumerSecret = reactContext.resources.getString(
+            reactContext.resources.getIdentifier("naver_client_secret", "string", reactContext.packageName))
+        val naverAppName = reactContext.resources.getString(
+            reactContext.resources.getIdentifier("naver_client_name", "string", reactContext.packageName))
+
+        NaverIdLoginSDK.initialize(
+            context ?: reactContext,
+            consumerKey ?: naverConsumerKey,
+            consumerSecret ?: naverConsumerSecret,
+            appName ?: naverAppName,
+        )
+    }
 
     @ReactMethod
     fun logout(promise: Promise) = UiThreadUtil.runOnUiThread {
