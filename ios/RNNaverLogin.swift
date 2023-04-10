@@ -25,11 +25,11 @@ class RNNaverLogin: NSObject {
     
     func initSDK(serviceUrlScheme: String? = nil, consumerKey: String? = nil, consumerSecret: String? = nil,
                  appName: String? = nil, disableNaverAppAuth: Bool? = nil) {
-        let dServiceUrlScheme: String? = Bundle.main.object(forInfoDictionaryKey: "naverServiceUrlScheme") as? String
-        let dConsumerKey: String? = Bundle.main.object(forInfoDictionaryKey: "naverConsumerKey") as? String
-        let dConsumerSecret: String? = Bundle.main.object(forInfoDictionaryKey: "naverConsumerSecret") as? String
-        let dAppName: String? = Bundle.main.object(forInfoDictionaryKey: "naverAppName") as? String
-        let dDisableNaverAppAuth: Bool? = Bundle.main.object(forInfoDictionaryKey: "naverDisableNaverAppAuth") as? Bool
+        let dServiceUrlScheme: String? = Bundle.main.object(forInfoDictionaryKey: "naver_client_url_scheme") as? String
+        let dConsumerKey: String? = Bundle.main.object(forInfoDictionaryKey: "naver_client_id") as? String
+        let dConsumerSecret: String? = Bundle.main.object(forInfoDictionaryKey: "naver_client_secret") as? String
+        let dAppName: String? = Bundle.main.object(forInfoDictionaryKey: "naver_client_name") as? String
+        let dDisableNaverAppAuth: Bool? = Bundle.main.object(forInfoDictionaryKey: "naver_disable_naver_app_auth") as? Bool
 
         connection.serviceUrlScheme = serviceUrlScheme ?? dServiceUrlScheme ?? connection.serviceUrlScheme
         connection.consumerKey = consumerKey ?? dConsumerKey ?? connection.consumerKey
