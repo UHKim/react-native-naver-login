@@ -3,36 +3,56 @@ import NaverThirdPartyLogin
 
 @objc(RNNaverLogin)
 class RNNaverLogin: NSObject {
-	private var connection: NaverThirdPartyLoginConnection {
-		get {
-			return NaverThirdPartyLoginConnection.getSharedInstance()
-		}
-	}
-	
-	private var loginPromiseResolver: RCTPromiseResolveBlock? = nil
-	private var deleteTokenPromiseResolver: RCTPromiseResolveBlock? = nil
-	private var deleteTokenPromiseRejector: RCTPromiseRejectBlock? = nil
-	
-	@objc
-	static func requiresMainQueueSetup() -> Bool{
-		return false;
-	}
+    public override init() {
+        super.init()
+        initSDK()
+    }
+    
+    private var connection: NaverThirdPartyLoginConnection {
+        get {
+            return NaverThirdPartyLoginConnection.getSharedInstance()
+        }
+    }
+    
+    private var loginPromiseResolver: RCTPromiseResolveBlock? = nil
+    private var deleteTokenPromiseResolver: RCTPromiseResolveBlock? = nil
+    private var deleteTokenPromiseRejector: RCTPromiseRejectBlock? = nil
+    
+    @objc
+    static func requiresMainQueueSetup() -> Bool{
+        return true;
+    }
+    
+    func initSDK(serviceUrlScheme: String? = nil, consumerKey: String? = nil, consumerSecret: String? = nil,
+                 appName: String? = nil, disableNaverAppAuth: Bool? = nil) {
+        let dServiceUrlScheme: String? = Bundle.main.object(forInfoDictionaryKey: "naverServiceUrlScheme") as? String
+        let dConsumerKey: String? = Bundle.main.object(forInfoDictionaryKey: "naverConsumerKey") as? String
+        let dConsumerSecret: String? = Bundle.main.object(forInfoDictionaryKey: "naverConsumerSecret") as? String
+        let dAppName: String? = Bundle.main.object(forInfoDictionaryKey: "naverAppName") as? String
+        let dDisableNaverAppAuth: Bool? = Bundle.main.object(forInfoDictionaryKey: "naverDisableNaverAppAuth") as? Bool
+
+        connection.serviceUrlScheme = serviceUrlScheme ?? dServiceUrlScheme ?? connection.serviceUrlScheme
+        connection.consumerKey = consumerKey ?? dConsumerKey ?? connection.consumerKey
+        connection.consumerSecret = consumerSecret ?? dConsumerSecret ?? connection.consumerSecret
+        connection.appName = appName ?? dAppName ?? connection.appName
+        connection.isNaverAppOauthEnable = (dDisableNaverAppAuth ?? disableNaverAppAuth ?? false) ? false : true
+        
+        connection.isInAppOauthEnable = true
+        connection.delegate = self
+    }
 	
 	@objc
 	func login(_ serviceUrlScheme: String, consumerKey: String, consumerSecret: String,
-			   appName: String, disableNaverAppAuth: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock){
+			   appName: String, disableNaverAppAuth: Bool,
+               resolve: @escaping RCTPromiseResolveBlock,
+               reject: RCTPromiseRejectBlock){
 		DispatchQueue.main.async { [unowned self] in
 			loginPromiseResolver = resolve
-			
-			connection.serviceUrlScheme = serviceUrlScheme
-			connection.consumerKey = consumerKey
-			connection.consumerSecret = consumerSecret
-			connection.appName = appName
-			
-			connection.isNaverAppOauthEnable = disableNaverAppAuth ? false : true
-			connection.isInAppOauthEnable = true
-			
-			connection.delegate = self
+            initSDK(serviceUrlScheme: serviceUrlScheme,
+                    consumerKey: consumerKey,
+                    consumerSecret: consumerSecret,
+                    appName: appName,
+                    disableNaverAppAuth: disableNaverAppAuth)
 			connection.requestThirdPartyLogin()
 		}
 	}
@@ -76,7 +96,7 @@ extension RNNaverLogin: NaverThirdPartyLoginConnectionDelegate {
 			"failureResponse": [
 				"isCancel": isCancel,
 				"message": additionalMessage ?? "알 수 없는 에러입니다",
-			],
+            ] as [String : Any],
 		];
 	}
 	
